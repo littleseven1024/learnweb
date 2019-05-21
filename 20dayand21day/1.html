@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>啦啦啦</title>
+    </head>
+    <body>
+        <input id="name" type="text">
+        <button id="submit-btn">Submit</button>
+        <script>
+            
+            var btn = document.getElementById("submit-btn");
+            btn.onclick = function (){
+                var name = document.getElementById("name");
+                console.log(name.value);
+            }
+            document.onkeydown = function (e){
+                if (e.keyCode == 13) {
+                    var name = document.getElementById("name");
+                    console.log(name.value);
+                }
+                if (e.keyCode == 27) {
+                    var name = document.getElementById("name");
+                    name.value = "";
+                    name.focus();
+                }
+            }
+        </script>
+    </body>
+</html>
