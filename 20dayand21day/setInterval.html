@@ -25,8 +25,9 @@
                     clearInterval(t);
                     btn.disabled = false;
                     btn.innerHTML = "淡入";
-                    btn.addEventListener("click", huifu);
                     btn.removeEventListener("click", xiaoshi);
+                    btn.addEventListener("click", huifu);
+                    
                 }
                  
             }
@@ -34,18 +35,18 @@
 
             function huifu() {
                 if (opacity < 1) {
-                    var h = setInterval(huifu, 100);
+                    var t = setInterval(huifu, 100);
                     opacity = opacity + 0.1;
                     console.log(opacity);
                     obj.style.opacity = opacity;
                     btn.disabled = true;
                     
                 } else if (opacity >= 1) {
-                    clearInterval(h);
+                    clearInterval(t);
                     btn.disabled = false;
                     btn.innerHTML = "淡出";
-                    btn.addEventListener("click", xiaoshi);
                     btn.removeEventListener("click", huifu);
+                    btn.addEventListener("click", xiaoshi);           
                 }
             }
 
