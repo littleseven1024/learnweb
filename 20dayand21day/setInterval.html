@@ -11,46 +11,35 @@
         <script>
             var btn = document.getElementById("fade-btn");
             var obj = document.getElementById("fade-obj");
-            var opacity = 1;
-
-            function xiaoshi() {
-                if (opacity > 0) {
-                    var t = setInterval(xiaoshi, 100);
-                    opacity = opacity - 0.1;
-                    console.log(opacity);
-                    obj.style.opacity = opacity;
+            var num = 10;
+            var flag = true;
+            var t;
+            btn.onclick = fade;
+            function fade() {
+                t = setInterval(function(){
                     btn.disabled = true;
-                }
-                else if (opacity <= 0){
-                    clearInterval(t);
-                    btn.disabled = false;
-                    btn.innerHTML = "淡入";
-                    btn.removeEventListener("click", xiaoshi);
-                    btn.addEventListener("click", huifu);
-                    
-                }
-                 
-            }
+                    if(flag){
+                        num--;
+                    }else{
+                        num++;
+                    }
+                    console.log(num);
+                    obj.style.opacity = num / 10;
 
+                    if (num <= 0 || num >= 10) {
+                        clearInterval(t);
+                        btn.disabled = false;
 
-            function huifu() {
-                if (opacity < 1) {
-                    var t = setInterval(huifu, 100);
-                    opacity = opacity + 0.1;
-                    console.log(opacity);
-                    obj.style.opacity = opacity;
-                    btn.disabled = true;
-                    
-                } else if (opacity >= 1) {
-                    clearInterval(t);
-                    btn.disabled = false;
-                    btn.innerHTML = "淡出";
-                    btn.removeEventListener("click", huifu);
-                    btn.addEventListener("click", xiaoshi);           
-                }
-            }
-
-            btn.addEventListener("click", xiaoshi);
+                        if(num){
+                            flag = true;
+                            btn.innerHTML = "淡出";
+                        }else{
+                            flag = false;
+                            btn.innerHTML = "淡入";
+                        }
+                    }
+                }, 100)
+            };
         </script>
     </body>
 </html>
