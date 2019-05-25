@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>啦啦啦</title>
+</head>
+
+<body>
+    <div id="txt1"></div>
+    <div id="txt2"></div>
+    <script>
+        var txt1 = document.getElementById("txt1");
+        var txt2 = document.getElementById("txt2")
+        //返回星期几
+        function getWeekday1(d) {
+            var weekday = new Array(7);
+            weekday[0] = "星期日";
+            weekday[1] = "星期一";
+            weekday[2] = "星期二";
+            weekday[3] = "星期三";
+            weekday[4] = "星期四";
+            weekday[5] = "星期五";
+            weekday[6] = "星期六";
+            return weekday[d.getDay()];
+        }
+        function getWeekday2(d) {
+            var weekday = new Array(7);
+            weekday[0] = "Sunday";
+            weekday[1] = "Monday";
+            weekday[2] = "Tuesday";
+            weekday[3] = "Wednesday";
+            weekday[4] = "Thursday";
+            weekday[5] = "Friday";
+            weekday[6] = "Saturday";
+            return weekday[d.getDay()];
+        }
+        //补充月，日，小时，分，秒为两位
+        function mended(time) {
+            if (time < 10) {
+                time = "0" + time;
+            }
+            return time;
+        }
+        //按要求的格式包装
+        function format1(year, month, date, weekday, hour, minute, second) {
+            return year + "年" + mended(month) + "月" + mended(date) + "日" + weekday + " " + mended(hour) + ":" + mended(minute) + ":" + mended(second);
+        }
+        function format2(year, month, date, weekday, hour, minute, second) {
+            if (hour <= 12) {
+                return year + "-" + mended(month) + "-" + mended(date) + " " + weekday + " " + mended(hour) + ":" + mended(minute) + ":" + mended(second) + " AM";
+            } else {
+                hour -= 12;
+                return year + "-" + mended(month) + "-" + mended(date) + " " + weekday + " " + mended(hour) + ":" + mended(minute) + ":" + mended(second) + " PM";
+            }
+            
+        }
+        //显示时间
+        function displayTime() {
+            var d = new Date();
+            var year = d.getFullYear();
+            var month = d.getMonth();
+            var date = d.getDate();
+            var weekday1 = getWeekday1(d);
+            var weekday2 = getWeekday2(d);
+            var hour = d.getHours();
+            var minute = d.getMinutes();
+            var second = d.getSeconds();
+            txt1.innerHTML = format1(year, month, date, weekday1, hour, minute, second);
+            txt2.innerHTML = format2(year, month, date, weekday2, hour, minute, second);
+        }
+        //更新时间
+        function updateTime() {
+            displayTime();
+            var t = setTimeout("updateTime()",1000);
+        }
+        window.onload = updateTime();
+    </script>
+</body>
+
+</html>

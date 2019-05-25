@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>啦啦啦</title>
+</head>
+
+<body>
+    <div id="txt"></div>
+    <script>
+        var txt = document.getElementById("txt");
+        //返回星期几
+        function getWeekday(d) {
+            var weekday = new Array(7);
+            weekday[0] = "星期日";
+            weekday[1] = "星期一";
+            weekday[2] = "星期二";
+            weekday[3] = "星期三";
+            weekday[4] = "星期四";
+            weekday[5] = "星期五";
+            weekday[6] = "星期六";
+            return weekday[d.getDay()];
+        }
+        //补充月，日，小时，分，秒为两位
+        function mended(time) {
+            if (time < 10) {
+                time = "0" + time;
+            }
+            return time;
+        }
+        //按要求的格式包装
+        function format(year, month, date, weekday, hour, minute, second) {
+            return year + "年" + month + "月" + date + "日" + weekday + " " + hour + ":" + minute + ":" + second;
+        }
+        //显示时间
+        function displayTime() {
+            var d = new Date();
+            var year = d.getFullYear();
+            var month = mended(d.getMonth());
+            var date = mended(d.getDate());
+            var weekday = getWeekday(d);
+            var hour = mended(d.getHours());
+            var minute = mended(d.getMinutes());
+            var second = mended(d.getSeconds());
+            txt.innerHTML = format(year, month, date, weekday, hour, minute, second);
+        }
+        //更新时间
+        function updateTime() {
+            displayTime();
+            var t = setTimeout("updateTime()",1000);
+        }
+        window.onload = updateTime();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>啦啦啦</title>
+</head>
+
+<body>
+    <div id="select">
+        <select id="year-select" onchange="yearDay()">
+        </select>
+
+        <select id="month-select" onchange="yearDay()">
+        </select>
+
+        <select id="day-select">
+        </select>
+
+        <select id="hour-select">
+        </select>
+
+        <select id="minute-select">
+        </select>
+
+        <select id="second-select">
+        </select>
+    </div>
+
+
+    <p id="result-wrapper"></p>
+
+    <script>
+        //定义常量
+        var yearSelect = document.getElementById("year-select"),
+            monthSelect = document.getElementById("month-select"),
+            daySelect = document.getElementById("day-select"),
+            hourSelect = document.getElementById("hour-select"),
+            minuteSelect = document.getElementById("minute-select"),
+            secondSelect = document.getElementById("second-select"),
+            result = document.getElementById("result-wrapper"),
+            arr = new Array();
+
+
+
+        //根据所选年份获取月份、天数
+        function yearDay() {
+            console.log("改变了");
+            while (daySelect.childNodes.length > 2) {
+                daySelect.removeChild(daySelect.lastChild);
+                console.log("正在删除");
+            }
+            var selectYear = parseInt(yearSelect.value);
+            var selectMonth = parseInt(monthSelect.value);
+            if (selectYear % 400 == 0 || selectYear % 4 == 0) {
+                if (selectMonth == 2) {
+                    full(2, 29, daySelect);
+                    console.log("29个哦");
+                }
+            } else {
+                switch (selectMonth) {
+                    case 1:
+                        full(2, 31, daySelect);
+                        console.log("31个哦");
+                        break;
+                    case 2:
+                        full(2, 28, daySelect);
+                        console.log("28个哦");
+                        break;
+                    case 3:
+                        full(2, 31, daySelect);
+                        console.log("31个哦");
+                        break;
+                    case 4:
+                        full(2, 30, daySelect);
+                        console.log("30个哦");
+                        break;
+                    case 5:
+                        full(2, 31, daySelect);
+                        console.log("31个哦");
+                        break;
+                    case 6:
+                        full(2, 30, daySelect);
+                        console.log("30个哦");
+                        break;
+                    case 7:
+                        full(2, 31, daySelect);
+                        console.log("31个哦");
+                        break;
+                    case 8:
+                        full(2, 31, daySelect);
+                        console.log("31个哦");
+                        break;
+                    case 9:
+                        full(2, 30, daySelect);
+                        console.log("30个哦");
+                        break;
+                    case 10:
+                        full(2, 31, daySelect);
+                        console.log("31个哦");
+                        break;
+                    case 11:
+                        full(2, 30, daySelect);
+                        console.log("30个哦");
+                        break;
+                    case 12:
+                        full(2, 31, daySelect);
+                        console.log("31个哦");
+                        break;
+                    default:
+                        full(2, 31, daySelect);
+                        console.log("31个哦");
+                        break;
+                }
+            }
+        }
+
+        //增加子节点
+        function full(start, end, node) {
+            for (let i = start; i <= end; i++) {
+                var option = document.createElement("option");
+                option.setAttribute("value", i);
+                if (i < 10) {
+                    i = "0" + i;
+                }
+                option.innerHTML = i;
+                node.appendChild(option);
+            }
+        }
+
+        //补充下拉选项
+        function autoFull() {
+            full(1990, 2032, yearSelect);
+            full(1, 12, monthSelect);
+            full(1, 31, daySelect);
+            full(0, 23, hourSelect);
+            full(0, 59, minuteSelect);
+            full(0, 59, secondSelect);
+        }
+
+        //获取星期几
+        function getWeekday(d) {
+            var weekday = new Array(7);
+            weekday[0] = "星期日";
+            weekday[1] = "星期一";
+            weekday[2] = "星期二";
+            weekday[3] = "星期三";
+            weekday[4] = "星期四";
+            weekday[5] = "星期五";
+            weekday[6] = "星期六";
+            return weekday[d.getDay()];
+        }
+
+        //获取所选择的时间       
+        function getSelectTime() {
+            var selectYear = parseInt(yearSelect.value);
+            var selectMonth = parseInt(monthSelect.value);
+            var selectDay = parseInt(daySelect.value);
+            var selectHour = parseInt(hourSelect.value);
+            var selectMinute = parseInt(minuteSelect.value);
+            var selectSecond = parseInt(secondSelect.value);
+            var d = new Date(selectYear, selectMonth, selectDay, selectHour, selectMinute, selectSecond);
+            result.innerHTML = "现在距离 " + selectYear + "年" + selectMonth + "月" + selectDay + "日" + getWeekday(d) + " " +
+                selectHour + ":" + selectMinute + ":" + selectSecond;
+            return d;
+        }
+
+        //获取当前时间
+        function getCurrentTime() {
+            var d = new Date();
+            var currentInterval = d.getTime();
+            return currentInterval;
+        }
+
+        //显示
+        function display() {
+            var selectD = getSelectTime();
+            var selectInterval = selectD.getTime();
+            var currentInterval = getCurrentTime();
+            var cha = selectInterval - currentInterval;
+            var absCha = Math.abs(cha);
+            arr[0] = parseInt(absCha / (24 * 60 * 60 * 1000)); // 天数
+            arr[1] = parseInt((absCha / (24 * 60 * 60 * 1000) - arr[0]) * 24); // 小时
+            arr[2] = parseInt(((absCha / (24 * 60 * 60 * 1000) - arr[0]) * 24 - arr[1]) * 60); // 分钟
+            arr[3] = parseInt((((absCha / (24 * 60 * 60 * 1000) - arr[0]) * 24 - arr[1]) * 60 - arr[2]) * 60); // 秒
+            if (cha > 0) {
+                result.innerHTML += " 还有： " + arr[0] + " 天 " + arr[1] + " 小时 " + arr[2] + " 分 " + arr[3] + " 秒！";
+            } else if (cha < 0) {
+                result.innerHTML += " 已经过去： " + arr[0] + " 天 " + arr[1] + " 小时 " + arr[2] + " 分 " + arr[3] + " 秒！";
+            }
+            setTimeout("display()", 1000);
+        }
+
+        window.addEventListener("load", autoFull());
+        window.addEventListener("load", display());
+    </script>
+</body>
+
+</html>
