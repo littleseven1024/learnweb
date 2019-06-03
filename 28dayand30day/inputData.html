@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>啦拉拉拉</title>
+    <style>
+        li:hover {
+            background-color: brown;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <input id="email-input" type="text">
+        <ul id="email-sug-wrapper" class="email-sug"></ul>
+    </div>
+    <script>
+        var email_input = document.getElementById("email-input");
+        var postfixList = ['163.com', 'gmail.com', '126.com', 'qq.com', '263.net'];
+        var ul = document.getElementById("email-sug-wrapper");
+
+        //监听输入框的输入事件
+        email_input.oninput = function() {
+            addSugWrapper();
+            control();
+        }
+        ul.onclick = function (e) {
+            console.log(e.target.tagName);
+            
+            if (e.target.tagName == "LI") {
+                var econtent = e.target.innerHTML;
+                email_input.value = econtent;
+                hiddenTooltip();
+            }
+        }
+
+        //获取用户输入
+        function getInput() {
+             var string = email_input.value;
+             return string.trim();
+        }
+
+        //生成内容
+        function generateContent() {
+            var string1 = getInput();
+            var emailstring = new Array();
+            var a =  string1.indexOf("@");
+            console.log(a);
+            var string = string1;
+            var laststring = "";
+            if (a != -1) {
+                string = string1.slice(0, a);
+                laststring = string1.slice(a+1);
+                console.log(laststring);
+            }
+            for (let i = 0; i < postfixList.length; i++) {
+                if (postfixList[i].indexOf(laststring) != -1) {
+                    emailstring.push(string + "@" + postfixList[i]);                   
+                }
+            }
+            return emailstring;
+        }
+
+        //添加节点
+        function addSugWrapper() {
+            while (ul.childElementCount > 0) {
+                ul.removeChild(ul.firstElementChild);
+                console.log("删除了一个节点："+ul.firstElementChild);
+                
+            }
+            var emailstring = generateContent();            
+            for (let i = 0; i < emailstring.length; i++) {
+                 var li = document.createElement("li");
+                 li.innerHTML = emailstring[i];
+                 ul.appendChild(li);
+                 console.log("生成了一个节点：" + emailstring[i]);
+                   
+            }
+        }
+
+        //控制ul的显示和隐藏
+        function control() {
+            var string = getInput();
+            if (string.length == 0) {
+                hiddenTooltip();
+            } else {
+                displayTooltip();
+            }
+        }
+
+        function hiddenTooltip() {
+            ul.style.display = "none";
+        }
+        function displayTooltip() {
+            ul.style.display = "inline";
+        }
+
+    </script>
+</body>
+
+</html>
