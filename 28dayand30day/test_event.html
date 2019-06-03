@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>testlalala</title>
+    </head>
+    <body>
+        <div class="wrapper">
+            <input id="email-input" type="text">
+            <ul id="email-sug-wrapper" class="email-sug"></ul>
+        </div>
+
+        <script>
+            var email_input = document.getElementById("email-input");
+            function testkeyup() {
+                console.log("keyup event!");
+                
+            }
+            function testkeypress() {
+                console.log("keypress event!");
+                
+            }
+            function testkeydown() {
+                console.log("keydown event!");
+                
+            }
+            function testoninput() {
+                console.log("oninput event!");
+                
+            }
+            // email_input.addEventListener("keyup", testkeyup);
+            // email_input.addEventListener("keydown", testkeydown);
+            // email_input.addEventListener("keypress", testkeypress);
+            email_input.addEventListener("input", testoninput);
+
+        </script>
+    </body>
+</html>
