@@ -8,6 +8,9 @@
         li:hover {
             background-color: brown;
         }
+        .selected {
+            background-color: cornflowerblue;
+        }
     </style>
 </head>
 
@@ -20,19 +23,63 @@
         var email_input = document.getElementById("email-input");
         var postfixList = ['163.com', 'gmail.com', '126.com', 'qq.com', '263.net'];
         var ul = document.getElementById("email-sug-wrapper");
+        var nowSelectTipIndex = 0;
+        email_input.focus();
 
-        //监听输入框的输入事件
-        email_input.oninput = function() {
+        //监听输入框的按键事件
+        email_input.addEventListener("keyup", function(event){
+            var e = event || window.event;
+            if (e.keyCode != 13 && e.keyCode != 38 && e.keyCode != 40 && e.keyCode != 27) {
+                reset();
+            }
             addSugWrapper();
             control();
-        }
-        ul.onclick = function (e) {
-            console.log(e.target.tagName);
+            var li = ul.querySelectorAll("li");
+            console.log("li标签的数量：" + li.length);
+            //上键
+            if (e.keyCode == 38 && li.length > 0) {
+                if (nowSelectTipIndex != 0) {
+                    nowSelectTipIndex = nowSelectTipIndex -1;
+                } else {
+                    nowSelectTipIndex = li.length - 1;
+                }
+                addSugWrapper();
+            }
+            //下键
+            if (e.keyCode == 40  && li.length > 0) {
+                if (nowSelectTipIndex < li.length - 1) {
+                    nowSelectTipIndex = nowSelectTipIndex + 1;
+                } else {
+                    nowSelectTipIndex = 0;
+                }
+                addSugWrapper();
+            }
+            //回车
+            if (e.keyCode == 13  && li.length > 0) {
+                email_input.value = htmlDecode(li[nowSelectTipIndex].innerHTML);
+                hiddenTooltip();
+            }
+            //ESC键
+            if (e.keyCode == 27 && li.length > 0) {
+                for (let i = 0; i < li.length; i++) {
+                    li[i].setAttribute("class", "selected"); 
+                }
+            }
             
+        })
+
+        //重置选中状态
+        function reset() {
+            nowSelectTipIndex = 0;
+        }
+
+        //点击监听事件
+        ul.onclick = function (e) {
             if (e.target.tagName == "LI") {
                 var econtent = e.target.innerHTML;
-                email_input.value = econtent;
+                email_input.value = htmlDecode(econtent);
                 hiddenTooltip();
+                email_input.focus();
             }
         }
 
@@ -47,37 +94,37 @@
             var string1 = getInput();
             var emailstring = new Array();
             var a =  string1.indexOf("@");
-            console.log(a);
             var string = string1;
             var laststring = "";
             if (a != -1) {
                 string = string1.slice(0, a);
                 laststring = string1.slice(a+1);
-                console.log(laststring);
             }
             for (let i = 0; i < postfixList.length; i++) {
                 if (postfixList[i].indexOf(laststring) != -1) {
-                    emailstring.push(string + "@" + postfixList[i]);                   
+                    emailstring.push(string + "@" + postfixList[i]);             
                 }
             }
+            
             return emailstring;
         }
 
         //添加节点
         function addSugWrapper() {
             while (ul.childElementCount > 0) {
-                ul.removeChild(ul.firstElementChild);
-                console.log("删除了一个节点："+ul.firstElementChild);
-                
+                ul.removeChild(ul.firstElementChild);   
             }
-            var emailstring = generateContent();            
+            var emailstring = generateContent();
+            console.log(emailstring);        
             for (let i = 0; i < emailstring.length; i++) {
-                 var li = document.createElement("li");
-                 li.innerHTML = emailstring[i];
-                 ul.appendChild(li);
-                 console.log("生成了一个节点：" + emailstring[i]);
-                   
+                var li = document.createElement("li");
+                li.innerHTML = htmlEncode(emailstring[i]);
+                 ul.appendChild(li);     
             }
+            if (ul.hasChildNodes && ul.firstChild != null) {
+                ul.childNodes[nowSelectTipIndex].setAttribute("class", "selected");
+            }
+            
         }
 
         //控制ul的显示和隐藏
@@ -92,9 +139,27 @@
 
         function hiddenTooltip() {
             ul.style.display = "none";
+            console.log("隐藏了");
         }
         function displayTooltip() {
             ul.style.display = "inline";
+        }
+
+        //转码
+        function htmlEncode(html) {
+            var temp = document.createElement("div");
+            (temp.textContent != undefined) ? (temp.textContent = html) : (temp.innerText = html);
+            var output = temp.innerHTML;
+            temp = null;
+            return output;
+        }
+        //解码
+        function htmlDecode(text) {
+            var temp = document.createElement("div");
+            temp.innerHTML = text;
+            var output = temp.innerText || temp.textContent;
+            temp = null;
+            return output;
         }
 
     </script>

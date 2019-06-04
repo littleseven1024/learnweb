@@ -23,75 +23,63 @@
         var email_input = document.getElementById("email-input");
         var postfixList = ['163.com', 'gmail.com', '126.com', 'qq.com', '263.net'];
         var ul = document.getElementById("email-sug-wrapper");
-        var selectedLi = null;
-        var selectnum = 0;
 
         //监听输入框的输入事件
-        email_input.onkeyup = function(event) {
+        email_input.addEventListener("input", function(event) {
             var e = event || window.event;
             addSugWrapper();
             control();
             if (e.keyCode != 13 && e.keyCode != 38 && e.keyCode != 40) {
                 reset();
             }
-            var list = ul.querySelectorAll("li");
-            if (selectedLi == null) {
-                selectedLi = ul.querySelector("li:first-child");
-                selectedLi.classList.add("selected");
-            }
-            for (let i = 0; i < list.length; i++) {
-                if (list[i].getAttribute("class") == "selected") {
-                    selectedLi = list[i];
-                    selectnum = i;
-                }   
-            }
+        })
+
+        email_input.addEventListener("keyup", function(event){
+            var e = event || window.event;
+            var selectedLi = document.getElementsByClassName("selected")[0];
             //上键
             if (e.keyCode == 38) {
-                selectedLi.classList.remove("selected");
-                if (selectnum != 0) {
-                    selectedLi = list[--selectnum];
-                    selectedLi.classList.add("selected");
-                    console.log("上移到：" + selectedLi.textContent);
+                selectedLi.setAttribute("class", "");
+                if (selectedLi.parentNode.firstChild != selectedLi) {
+                    selectedLi.previousSibling.setAttribute("class", "selected");
+                    console.log("上移到：" + selectedLi.previousSibling.innerHTML);
                     
                 } else {
-                    selectedLi = list[list.length-1];
-                    selectedLi.classList.add("selected");
-                    selectnum = list.length - 1;
-                    console.log("上移到：" + selectedLi.textContent);
+                    selectedLi.parentNode.lastChild.setAttribute("class", "selected");
+                    console.log("移到最后一个：" + selectedLi.parentNode.lastChild.innerHTML);
+                    
                 }
             }
             //下键
             if (e.keyCode == 40) {
-                selectedLi.classList.remove("selected");
-                if (selectnum != list.length -1) {
-                    selectedLi = list[++selectnum];
-                    selectedLi.classList.add("selected");
-                    console.log("下移到：" + selectedLi.textContent);
+                selectedLi.setAttribute("class", "");
+                if (selectedLi.parentNode.lastChild != selectedLi) {
+                    selectedLi.nextSibling.setAttribute("class", "selected");
+                    console.log("下移到：" + selectedLi.nextSibling.innerHTML);
+                    
                 } else {
-                    selectedLi = list[0];
-                    selectedLi.classList.add("selected");
-                    selectnum = 0;
-                    console.log("下移到：" + selectedLi.textContent);
+                    selectedLi.parentNode.firstChild.setAttribute("class", "selected");
+                    console.log("移到第一个：" + selectedLi.parentNode.firstChild.innerHTML);
+                    
                 }
             }
             //回车键
             if (e.keyCode == 13) {
-                email_input.value = selectedLi.textContent;
+                email_input.value = selectedLi.innerHTML;
                 hiddenTooltip();
             }
-        }
+        })
 
         //重置选中状态
         function reset() {
-            var firstLi = ul.querySelector("li:first-child");
-            var selectedLi = ul.querySelector("li.selected");
-            if (selectedLi != null) {
-                if (firstLi != selectedLi) {
-                    selectedLi.classList.remove("selected");
-                    firstLi.classList.add("selected");
-                }
-            } else {
-                firstLi.classList.add("selected");
+            var selectedLi = document.getElementsByClassName("selected")[0];
+            console.log("ul的子节点：" + ul.hasChildNodes());
+            
+            if (selectedLi == null && ul.hasChildNodes()) {
+                ul.firstChild.setAttribute("class", "selected");
+            } else if (ul.firstChild != selectedLi) {
+                selectedLi.setAttribute("class", "");
+                ul.firstChild.setAttribute("class", "selected");
             }
         }
 
@@ -142,7 +130,6 @@
                 li.innerHTML = emailstring[i];
                 ul.appendChild(li);
             }
-            ul.firstChild.setAttribute("class", "selected");
         }
 
         //控制ul的显示和隐藏
