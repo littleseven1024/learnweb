@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>啦啦啦</title>
+    </head>
+    <body>
+        <select id="region-select">
+            <option hidden="true">地区</option>
+            <option>华东</option>
+            <option>华南</option>
+            <option>华北</option>
+        </select>
+
+        <select id="product-select">
+                <option hidden="true">种类</option>
+                <option>手机</option>
+                <option>笔记本</option>
+                <option>智能音箱</option>
+        </select>
+
+        <div id="table-wrapper"></div>
+
+        <script type="text/javascript" src="ife31data.js"></script>
+        <script>
+            var regionSelect = document.getElementById("region-select");
+            var productSelect = document.getElementById("product-select");
+            var tableWrapper = document.getElementById("table-wrapper");
+
+            // regionSelect的change事件
+            regionSelect.addEventListener("change", function(){
+                var data = getData();
+                renderTable(data);
+            });
+
+            // productSelect的change事件
+            productSelect.addEventListener("change", function(){
+                var data = getData();
+                renderTable(data);
+            });
+
+            // 根据regionSelect选项获取数据
+            function getData() {
+                var regionText = regionSelect.value;
+                var productText = productSelect.value;
+                var list = new Array();
+                for (let i = 0; i < sourceData.length; i++) {
+                    if (productText != "种类") {
+                        if (regionText != "地区") {
+                            if (sourceData[i].region == regionText && sourceData[i].product == productText) {
+                                list.push(sourceData[i]);
+                            }  
+                        } else {
+                            if (sourceData[i].region == regionText || sourceData[i].product == productText) {
+                                list.push(sourceData[i]);
+                            }
+                        }
+                    } else {
+                        if (sourceData[i].region == regionText || sourceData[i].product == productText) {
+                                list.push(sourceData[i]);
+                        }
+                    }
+                        
+                }
+                return list;
+            }
+
+            //渲染新的表格
+            function renderTable(data) {
+                //插入表头
+                if (tableWrapper.firstChild) {
+                    tableWrapper.removeChild(tableWrapper.firstChild);
+                }
+                var table = document.createElement("table");
+                var headerTable = ["商品", "地区", "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+                var header = table.createTHead();
+                var tr0 = header.insertRow(0);
+                for (let i = 0; i < headerTable.length; i++) {
+                    var th = tr0.insertCell(tr0.cells.length);
+                    th.innerHTML = headerTable[i];  
+                }
+                //遍历数据，插入数据
+                for (let i = 0; i < data.length; i++) {
+                    var tr = table.insertRow(table.rows.length);
+                    var td = tr.insertCell(0);
+                    td.innerHTML = data[i].product;
+                    var td = tr.insertCell(1);
+                    td.innerHTML = data[i].region;
+                    for (let j = 0; j < 12; j++) {
+                        var td = tr.insertCell(j+2);
+                        td.innerHTML = data[i].sale[j];    
+                    }    
+                }
+                tableWrapper.appendChild(table);    
+            }
+        </script>
+    </body>
+</html>
