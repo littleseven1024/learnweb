@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>啦啦啦</title>
+    </head>
+    <body>
+        <div id="region-radio-wrapper"></div>
+        <div id="product-radio-wrapper"></div>
+        <div id="table-wrapper"></div>
+
+        <script type="text/javascript" src="ife31data.js"></script>
+        <script>
+            var regionRadio = document.getElementById("region-radio-wrapper");
+            var productRadio = document.getElementById("product-radio-wrapper");
+            var tableWrapper = document.getElementById("table-wrapper");
+
+            //生成CheckBox
+            function createCheckBox(checkBoxName, list) {
+                //生成全选checkbox的html，给一个自定义属性表示为全选checkbox，比如checkbox-type="all"
+                var allSelect = document.createElement("input");
+                allSelect.setAttribute("type", "checkbox");
+                allSelect.setAttribute("checkbox-type", "all");
+                // allSelect.setAttribute("value", "0");
+                var text = document.createTextNode("全选");
+                checkBoxName.appendChild(allSelect);
+                checkBoxName.appendChild(text);
+                //遍历参数对象，生成各个子选项
+                for (let i = 0; i < list.length; i++) {
+                    var select = document.createElement("input");
+                    select.setAttribute("type", "checkbox");
+                    // select.setAttribute("value", list[i].value);
+                    select.setAttribute("checkbox-type", "single");
+                    var text = document.createTextNode(list[i].text);
+                    checkBoxName.appendChild(select);
+                    checkBoxName.appendChild(text);    
+                }
+                checkBoxName.onclick = function(event){
+                    var event = event || window.event;
+                    var target = event.target || event.srcElement;
+                    if (target.getAttribute("type") == "checkbox") {
+                        var length = checkBoxName.childNodes.length;
+                        var count = 0;
+                        var checkBoxType = target.getAttribute("checkbox-type");
+                        if (target.nodeName.toLowerCase() == "input") {
+                            //点击全选则全勾上
+                            if (checkBoxType == "all") {
+                                if (target.checked == true) {
+                                    for (let i = 2; i < length; i+=2) {
+                                        checkBoxName.childNodes[i].checked = true;
+                                    }
+                                }
+                                if (target.checked == false) {
+                                    for (let i = 2; i < length; i+=2) {
+                                        checkBoxName.childNodes[i].checked = false;
+                                    }
+                                }    
+                            }
+                            //单个checkBox
+                            else if (checkBoxType == "single") {
+                                for (let i = 0; i < length; i+=2) {
+                                    if (checkBoxName.childNodes[i].checked == true) {
+                                        count++;
+                                    }    
+                                }                                
+                                //唯一一个被勾选：将checked状态变为真
+                                if (target.checked == false && count == 0) {
+                                    target.checked = true;    
+                                } 
+                                //满足全选状态
+                                else if (target.checked == true && count == length/2-1) {
+                                    allSelect.checked = true;    
+                                } 
+                                //不满足全选状态
+                                else if (target.checked == false && count != length/2-1) {
+                                    allSelect.checked = false;    
+                                }else {
+                                    allSelect.checked = false;    
+                                }
+                            }
+                        }
+                    }    
+                renderTable();
+                }
+            }
+            
+            createCheckBox(regionRadio, [{
+                value: 1,
+                text: "华东"
+            }, {
+                value: 2,
+                text: "华北"
+            }, {
+                value: 3,
+                text: "华南"
+            }]);
+            createCheckBox(productRadio, [{
+                value: 1,
+                text: "手机"
+            }, {
+                value: 2,
+                text: "笔记本"
+            }, {
+                value: 3,
+                text: "智能音箱"
+            }]);
+
+            //获取选中的选项
+            function getCheckedData(checkBoxName) {
+                var length = checkBoxName.childNodes.length;
+                var arr = new Array();
+                for (let i = 2; i < length; i+=2) {
+                    if (checkBoxName.childNodes[i].checked == true) {
+                        arr.push(checkBoxName.childNodes[i+1].nodeValue);     
+                    }
+                }
+                return arr;
+            }
+            //根据选项获取数据
+            function getData() {
+                var selectRegion = getCheckedData(regionRadio);
+                var selectProduct = getCheckedData(productRadio);
+                console.log("Region: "+selectRegion);
+                console.log("Product: "+selectProduct);
+                var arr = new Array();
+                if (selectRegion.length>0 && selectProduct.length>0) {
+                    for (let i = 0; i < selectRegion.length; i++) {
+                        for (let j = 0; j < selectProduct.length; j++) {
+                            for (let z = 0; z < sourceData.length; z++) {
+                                if (sourceData[z].region == selectRegion[i] && sourceData[z].product == selectProduct[j]) {
+                                    arr.push(sourceData[z]);
+                                }    
+                            }    
+                        }    
+                    }
+                }
+                if (selectRegion.length>0 && !selectProduct.length>0) {
+                    for (let i = 0; i < selectRegion.length; i++) {
+                        for (let z = 0; z < sourceData.length; z++) {
+                                if (sourceData[z].region == selectRegion[i]) {
+                                    arr.push(sourceData[z]);
+                                }      
+                            }    
+                        }    
+                    }
+                if (!selectRegion.length>0 && selectProduct.length>0) {
+                    for (let j = 0; j < selectProduct.length; j++) {
+                        for (let z = 0; z < sourceData.length; z++) {
+                            if (sourceData[z].product == selectProduct[j]) {
+                                arr.push(sourceData[z]);
+                            }       
+                        }    
+                    }
+                }    
+                return arr;    
+            }
+
+            //渲染表格
+            function renderTable() {
+                //删除存在的原表格
+                if (tableWrapper.firstChild) {
+                    tableWrapper.removeChild(tableWrapper.firstChild);
+                }
+                //获取数据
+                var arr = getData();
+                console.log(arr);
+                
+                var table = document.createElement("table");
+                var regionlength = getCheckedData(regionRadio).length;
+                var productlength = getCheckedData(productRadio).length;
+                if (productlength == 1 && regionlength > 1) {
+                    //渲染表格1：当商品选择了一个，地区选择了多个的时候，商品作为第一列，地区作为第二列，并且把商品这一列的单元格做一个合并，只保留一个商品名称
+                    createTable1(table, arr);
+                    console.log("商品1个，地区多个");
+                    
+                } else if (regionlength == 1 && productlength > 1) {
+                    //渲染表格2：当地区选择了一个，商品选择了多个的时候，地区作为第一列，商品作为第二列，并且把地区这一列的单元格做一个合并，只保留一个地区名称
+                    createTable2(table, arr);
+                    console.log("商品多个，地区1个");
+                } else if (regionlength > 1 && productlength > 1) {
+                    //渲染表格3：当商品和地区都选择了多于一个的情况下，以商品为第一列，地区为第二列，商品列对同样的商品单元格进行合并
+                    createTable3(table, arr, regionlength, productlength);
+                    console.log("商品多个，地区多个");
+                } else if (productlength == 1 && regionlength == 1) {
+                    //渲染表格4：当商品和地区都只选择一个的情况下，以商品为第一列，地区为第二列
+                    createTable3(table, arr, regionlength, productlength);
+                    console.log("商品1个，地区1个");
+                }
+                tableWrapper.appendChild(table);
+            }
+            //渲染表格1
+            function createTable1(table, arr) {
+                var headerTable = ["商品", "地区", "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+                var header = table.createTHead();
+                var tr0 = header.insertRow(0);
+                for (let i = 0; i < headerTable.length; i++) {
+                    var th = tr0.insertCell(tr0.cells.length);
+                    th.innerHTML = headerTable[i];  
+                }
+                for (let i = 0; i < arr.length; i++) {
+                    if (i == 0) {
+                        var tr = table.insertRow(table.rows.length);
+                        var td = tr.insertCell(0);
+                        td.innerHTML = arr[i].product;
+                        td.rowSpan = arr.length;
+                        var td = tr.insertCell(1);
+                        td.innerHTML = arr[i].region;
+                        for (let j = 0; j < 12; j++) {
+                            var td = tr.insertCell(j+2);
+                            td.innerHTML = arr[i].sale[j];                            
+                        }
+                    } else {
+                        var tr = table.insertRow(table.rows.length);
+                        var td = tr.insertCell(0);
+                        td.innerHTML = arr[i].region;
+                        for (let j = 0; j < 12; j++) {
+                            var td = tr.insertCell(j+1);
+                            td.innerHTML = arr[i].sale[j];                            
+                        }
+                    }
+                }
+            }
+            //渲染表格2
+            function createTable2(table, arr) {
+                var headerTable = ["地区", "商品", "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+                var header = table.createTHead();
+                var tr0 = header.insertRow(0);
+                for (let i = 0; i < headerTable.length; i++) {
+                    var th = tr0.insertCell(tr0.cells.length);
+                    th.innerHTML = headerTable[i];  
+                }
+                for (let i = 0; i < arr.length; i++) {
+                    if (i == 0) {
+                        var tr = table.insertRow(table.rows.length);
+                        var td = tr.insertCell(0);
+                        td.innerHTML = arr[i].region;
+                        td.rowSpan = arr.length;
+                        var td = tr.insertCell(1);
+                        td.innerHTML = arr[i].product;
+                        for (let j = 0; j < 12; j++) {
+                            var td = tr.insertCell(j+2);
+                            td.innerHTML = arr[i].sale[j];                            
+                        }
+                    } else {
+                        var tr = table.insertRow(table.rows.length);
+                        var td = tr.insertCell(0);
+                        td.innerHTML = arr[i].product;
+                        for (let j = 0; j < 12; j++) {
+                            var td = tr.insertCell(j+1);
+                            td.innerHTML = arr[i].sale[j];                            
+                        }
+                    }
+                }
+            }
+            //渲染表格3
+            function createTable3(table, arr, regionlength, productlength) {
+                var headerTable = ["商品", "地区", "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+                var header = table.createTHead();
+                var tr0 = header.insertRow(0);
+                for (var i = 0; i < headerTable.length; i++) {
+                    var th = tr0.insertCell(tr0.cells.length);
+                    th.innerHTML = headerTable[i];  
+                }
+                for (var i = 0; i < productlength; i++) {
+                    for (var j = 0; j < regionlength; j++) {
+                        if (j == 0) {
+                            var tr = table.insertRow(table.rows.length);
+                            var td = tr.insertCell(0);
+                            td.innerHTML = arr[j+i*regionlength].product;
+                            td.rowSpan = regionlength;
+                            var td = tr.insertCell(1);
+                            td.innerHTML = arr[j+i*regionlength].region;
+
+                            for (let z = 0; z < 12; z++) {
+                                var td = tr.insertCell(z+2);
+                                td.innerHTML = arr[j+i*regionlength].sale[z];    
+                            }
+                        } else {
+                            var tr = table.insertRow(table.rows.length);
+                            var td = tr.insertCell(0);
+                            td.innerHTML = arr[j+i*regionlength].region;
+                            for (let z = 0; z < 12; z++) {
+                                var td = tr.insertCell(z+1);
+                                td.innerHTML = arr[j+i*regionlength].sale[z];    
+                            }
+                        }   
+                    }    
+                }
+                
+            }
+        </script>
+    </body>
+</html>
