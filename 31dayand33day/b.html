@@ -266,22 +266,22 @@
                         if (j == 0) {
                             var tr = table.insertRow(table.rows.length);
                             var td = tr.insertCell(0);
-                            td.innerHTML = arr[j+i*regionlength].product;
+                            td.innerHTML = arr[i+j*regionlength].product;
                             td.rowSpan = regionlength;
                             var td = tr.insertCell(1);
-                            td.innerHTML = arr[j+i*regionlength].region;
+                            td.innerHTML = arr[i+j*productlength].region;
 
                             for (let z = 0; z < 12; z++) {
                                 var td = tr.insertCell(z+2);
-                                td.innerHTML = arr[j+i*regionlength].sale[z];    
+                                td.innerHTML = arr[i+j*productlength].sale[z];    
                             }
                         } else {
                             var tr = table.insertRow(table.rows.length);
                             var td = tr.insertCell(0);
-                            td.innerHTML = arr[j+i*regionlength].region;
+                            td.innerHTML = arr[i+j*productlength].region;
                             for (let z = 0; z < 12; z++) {
                                 var td = tr.insertCell(z+1);
-                                td.innerHTML = arr[j+i*regionlength].sale[z];    
+                                td.innerHTML = arr[i+j*productlength].sale[z];    
                             }
                         }   
                     }    
